@@ -1,6 +1,6 @@
 {
     "name": "statemanager",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Manages states with optional before and after transitions per state. Always built with JavaScript performance in mind.",
     "main": "src/StateManager.js",
     "files": ["src/", "dist/", "LICENSE", "README"],
@@ -27,6 +27,6 @@
         "recursive-readdir": "^1.2.0"
     },
     "dependencies": {
-        "eventhandler": "^2.0.2"
+        "eventhandler": "*"
     }
 }
