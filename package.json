@@ -1,8 +1,8 @@
 {
     "name": "statemanager",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Manages states with optional before and after transitions per state. Always built with JavaScript performance in mind.",
-    "main": "src/statemanager.js",
+    "main": "src/StateManager.js",
     "files": ["src/", "dist/", "LICENSE", "README"],
     "repository": {
         "type": "git",
@@ -25,5 +25,8 @@
         "gulp-sourcemaps": "^1.2.8",
         "gulp-uglify": "^1.0.1",
         "recursive-readdir": "^1.2.0"
+    },
+    "dependencies": {
+        "eventhandler": "^2.0.2"
     }
 }
