@@ -1,3 +1,7 @@
+/**
+ * @author John Pittman <johnrichardpittman@gmail.com> 
+ */
+
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD
