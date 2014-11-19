@@ -91,8 +91,8 @@
         var beforeLeave = state.transitions['onBeforeLeave'];
         if (beforeLeave !== undefined)
             beforeLeave.call(this._owner);
-        this.emit('leavestate', data);
         state['leave'].call(this._owner);
+        this.emit('leavestate', data);
     };
 
     /**

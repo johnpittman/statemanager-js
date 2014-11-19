@@ -1,6 +1,6 @@
 {
     "name": "statemanager",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Manages states with optional before and after transitions per state. Always built with JavaScript performance in mind.",
     "main": "src/StateManager.js",
     "files": ["src/", "dist/", "LICENSE", "README"],
@@ -8,7 +8,7 @@
         "type": "git",
         "url": "https://github.com/JohnPittman/statemanager-js.git"
     },
-    "keywords": ["fast", "optimized", "umd", "universal", "modular", "js", "module", "javascript", "chicken", "dinosaur", "state", "manager", "states"],
+    "keywords": ["fast", "optimized", "umd", "universal", "modular", "js", "module", "javascript", "chickendinosaur", "state", "manager", "states"],
     "author": "John Pittman",
     "license": "MIT",
     "bugs": {

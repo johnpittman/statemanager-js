@@ -1,6 +1,6 @@
 {
     "name": "statemanager",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Manages states with optional before and after transitions per state. Always built with JavaScript performance in mind.",
     "homepage": "https://github.com/JohnPittman/statemanager-js",
     "authors": ["John Pittman <johnrichadrpittman@gmail.com>"],

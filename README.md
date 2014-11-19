@@ -94,9 +94,13 @@ bower: bower install statemanager
 
     var listener1 = function(data) {
         console.log('State change listener!');
+        console.log(JSON.stringify(data));
     };
 
     var movementStateManager = new StateManager(this);
+
+    movementStateManager.on('enterstate', listener1);
+    movementStateManager.on('leavestate', listener1);
 
     console.log('Adding states.');
     movementStateManager.addStates(movementStates, 'Still');
