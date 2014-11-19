@@ -27,6 +27,7 @@ gulp test
 
 Each process is dependent upon the previous. If one fails the build process exits.
 
+- gulp
 - gulp test (Unit specifications)
 - gulp build (Test, folder clean-ups, minification, source maps, renaming)
 - gulp deploy (Test, build, versioning)
