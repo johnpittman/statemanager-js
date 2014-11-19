@@ -2,10 +2,12 @@ statemanager
 ============
 
 <h4>
+----------------------------------------
 /**
  * CURRENTLY IN DEVELOPMENT
  */
 </h4>
+----------------------------------------
 
 Manages states with optional before and after transitions per state. Always built with JavaScript performance in mind.
 
