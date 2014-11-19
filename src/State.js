@@ -5,47 +5,84 @@
     } else if (typeof exports === 'object') {
         // Node, CommonJS-like
         module.exports = factory();
-    } else {}
+    } else {
+        // Browser globals (root is window)
+        root.StateManager = root.StateManager || {};
+        root.StateManager.State = factory();
+    }
 }(this, function() {
     'use strict'
 
     /**
+     * Enter and leave state processes are required as they are the foundation a state transition.
      * @contructor
+     * @param {function} enterProcess - Code to be executed when entering the state.
+     * @param {function} leaveProcess - Code to be executed when leaving the state.
      */
-    function State() {
+    function State(enterProcess, leaveProcess) {
+        this.enter = enterProcess;
+        this.leave = leaveProcess;
     }
 
-    // State.prototype.onEnter = function(callback) {
-    //     this['enter'] = callback;
-    // };
+    /**
+     * Adds code as a function to be excuted before entering the state.
+     * @param  {function} process - Code to be executed when entering the state.
+     */
+    State.prototype.onBeforeEnter = function(process) {
+        this['before:enter'] = process;
+    };
 
-    //  State.prototype.onLeave = function(callback) {
-    //     this['leave'] = callback;
-    // };
+    /**
+     * Adds code as a function to be excuted before leaving the state.
+     * @param  {function} process - Code to be executed when leaving the state.
+     */
+    State.prototype.onBeforeLeave = function(process) {
+        this.transitions['before:leave'] = process;
+    };
 
-    // State.prototype.onEnterFrom = function(from, callback) {
-    //     if (this.transitions === undefined)
-    //         this.transitions = {};
-    //     this.transitions['enter:from:' + from] = callback;
-    // };
+    /**
+     * Adds code as a function to be excuted before entering the state.
+     * @param  {string} from - State name.
+     * @param  {function} process - Code to be executed when entering the state.
+     */
+    State.prototype.onBeforeEnterFrom = function(from, process) {
+        if (this.transitions === undefined)
+            this.transitions = {};
+        this.transitions['before:enter:from:' + from] = process;
+    };
 
-    // State.prototype.onBeforeEnterFrom = function(from, callback) {
-    //     if (this.transitions === undefined)
-    //         this.transitions = {};
-    //     this.transitions['before:enter:from:' + from] = callback;
-    // };
+    /**
+     * Adds code as a function to be excuted before entering the state.
+     * @param  {string} from - State name.
+     * @param  {function} process - Code to be executed when entering the state.
+     */
+    State.prototype.onEnterFrom = function(from, process) {
+        if (this.transitions === undefined)
+            this.transitions = {};
+        this.transitions['enter:from:' + from] = process;
+    };
 
-    // State.prototype.onLeaveTo = function(to, callback) {
-    //     if (this.transitions === undefined)
-    //         this.transitions = {};
-    //     this.transitions['leave:to:' + from] = callback;
-    // };
+    /**
+     * Adds code as a function to be excuted before leaving the state.
+     * @param  {string} to - State name.
+     * @param  {function} process - Code to be executed when leaving the state.
+     */
+    State.prototype.onBeforeLeaveTo = function(to, process) {
+        if (this.transitions === undefined)
+            this.transitions = {};
+        this.transitions['before:leave:to:' + from] = process;
+    };
 
-    // State.prototype.onBeforeLeaveTo = function(to, callback) {
-    //     if (this.transitions === undefined)
-    //         this.transitions = {};
-    //     this.transitions['before:leave:to:' + from] = callback;
-    // };
+    /**
+     * Adds code as a function to be excuted before leaving the state.
+     * @param  {string} to - State name.
+     * @param  {function} process - Code to be executed when leaving the state.
+     */
+    State.prototype.onLeaveTo = function(to, process) {
+        if (this.transitions === undefined)
+            this.transitions = {};
+        this.transitions['leave:to:' + from] = process;
+    };
 
     return State;
 }));
