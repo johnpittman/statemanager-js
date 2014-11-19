@@ -1,8 +1,8 @@
 statemanager
 ============
 
-<h4>
 ----------------------------------------
+<h4>
 /**
  * CURRENTLY IN DEVELOPMENT
  */
