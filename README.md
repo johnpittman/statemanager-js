@@ -1,14 +1,6 @@
 statemanager
 ============
 
-----------------------------------------
-<h4>
-/**
- * CURRENTLY IN DEVELOPMENT
- */
-</h4>
-----------------------------------------
-
 Manages states with optional before and after transitions per state. Always built with JavaScript performance in mind.
 
 <h1>Notes</h1>
@@ -43,11 +35,84 @@ Each process is dependent upon the previous. If one fails the build process exit
 
 <h4>Installation</h4>
 
-npm: npm install <br />
-bower: bower install 
+npm: npm install statemanager<br />
+bower: bower install statemanager
 
 <h4>How to use...</h4>
 
-<h1>Release Notes</h1>
+    var movementStates = {
+        'Still': {
+            enter: function() {
+                console.log('Standing still.');
+            },
+            leave: function() {
+                console.log('On to something else.');
+            },
+            transitions: {
+                onBeforeEnter: function() {
+                    console.log('Time to be chill.');
+                },
+                onBeforeLeave: function() {
+                    console.log('Being still sucks.');
+                }
+            }
+        },
+        'Walking': {
+            enter: function() {
+                console.log('Walking.');
+            },
+            leave: function() {
+                console.log('On to something else.');
+            },
+            transitions: {
+                onBeforeEnter: function() {
+                    console.log('Time to walk.');
+                },
+                onBeforeLeave: function() {
+                    console.log('Screw walking.');
+                }
+            }
+        },
+        'Running': {
+            enter: function() {
+                console.log('Running.');
+            },
+            leave: function() {
+                console.log('On to something else.');
+            },
+            transitions: {
+                onEnterFromWalking: function() {
+                    console.log('Time to run.');
+                },
+                onLeaveToStill: function() {
+                    console.log('Running is tiresome.');
+                }
+            }
+        }
+    }
 
-<h3>v1.0.0</h3>
+    var listener1 = function(data) {
+        console.log('State change listener!');
+    };
+
+    var movementStateManager = new StateManager(this);
+
+    console.log('Adding states.');
+    movementStateManager.addStates(movementStates, 'Still');
+
+    console.log('Previous state: ' + movementStateManager.getPreviousState());
+    console.log('Initial state: ' + movementStateManager.getCurrentState());
+
+    console.log('Changing state...');
+    movementStateManager.changeState('Walking');
+    console.log('Current state: ' + movementStateManager.getCurrentState());
+
+    console.log('Changing state...');
+    movementStateManager.changeState('Running');
+    console.log('Current state: ' + movementStateManager.getCurrentState());
+
+    console.log('Changing state...');
+    movementStateManager.changeState('Still');
+    console.log('Current state: ' + movementStateManager.getCurrentState());
+
+<h1>Release Notes</h1>
