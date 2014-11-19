@@ -1,0 +1,12 @@
+{
+    "name": "statemanager",
+    "version": "0.0.1",
+    "description": "Manages states with optional before and after transitions per state. Always built with JavaScript performance in mind.",
+    "homepage": "https://github.com/JohnPittman/statemanager-js",
+    "authors": ["John Pittman <johnrichadrpittman@gmail.com>"],
+    "main": "dist/statemanager.min.js",
+    "moduleType": ["amd", "globals", "node"],
+    "keywords": ["fast", "optimized", "umd", "universal", "modular", "js", "module", "javascript", "chicken", "dinosaur", "state", "manager", "states"],
+    "license": "MIT",
+    "ignore": ["gulpfile.js", ".gitignore", "package.json", "node_modules", "bower_components", "test", "tests"]
+}
