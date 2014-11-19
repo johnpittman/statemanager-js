@@ -26,22 +26,6 @@
 
     /**
      * Adds code as a function to be excuted before entering the state.
-     * @param  {function} process - Code to be executed when entering the state.
-     */
-    State.prototype.onBeforeEnter = function(process) {
-        this['before:enter'] = process;
-    };
-
-    /**
-     * Adds code as a function to be excuted before leaving the state.
-     * @param  {function} process - Code to be executed when leaving the state.
-     */
-    State.prototype.onBeforeLeave = function(process) {
-        this.transitions['before:leave'] = process;
-    };
-
-    /**
-     * Adds code as a function to be excuted before entering the state.
      * @param  {string} from - State name.
      * @param  {function} process - Code to be executed when entering the state.
      */
