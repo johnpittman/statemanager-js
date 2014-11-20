@@ -106,6 +106,7 @@
             if (beforeLeaveTo !== undefined)
                 beforeLeaveTo.call(this._owner, data);
         }
+        this.emit('beforeleavestate', data);
 
         // Call the static process that will always run on leave.
         state.leave.call(this._owner, data);
