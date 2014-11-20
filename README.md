@@ -149,7 +149,7 @@ bower: bower install statemanager
 
 <h4>Additional Changes...</h4>
 
-- Change the process order of the beforeEnter/beforeEnterFrom/enter calls as well as the beforeLeave/beforeLeaveTo/lease calls. It now is in the loginal order of when they would need to be called unless I see something differently down the road but this was pretty thought out.
+- Change the process order of the beforeEnter/beforeEnterFrom/enter calls as well as the beforeLeave/beforeLeaveTo/leave calls. It now is in the logical order of when they would need to be called unless I see something differently down the road but this was pretty thought out.
 
 <h3>v1.1.1</h3>
 

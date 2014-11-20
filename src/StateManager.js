@@ -61,7 +61,7 @@
     /**
      * Runs all enter processes for a state.
      * @param  {object} state
-     * @param  {string} data - Additional info to pass through to processes and listeners.
+     * @param  {*} [data] - Additional info to pass through to processes and listeners.
      */
     StateManager.prototype._enterState = function(state, data) {
         var hasTransitions = state.transitions !== undefined;
@@ -93,7 +93,7 @@
     /**
      * Runs all leave processes for a state.
      * @param  {object} state
-     * @param  {*} data
+     * @param  {*} [data]
      * @param  {string} toStateId
      */
     StateManager.prototype._leaveState = function(state, data, toStateId) {
@@ -144,7 +144,7 @@
         }
 
         // Update current state.
-        this._setCurrentStateId(toStateId);
+        this._setCurrentState(toStateId);
 
         // Run an initialize process for the state if there is one.
         var toState = this._states[toStateId];
@@ -161,7 +161,7 @@
      * Sets the current state to the state passed in without triggering events.
      * @param {string} name
      */
-    StateManager.prototype._setCurrentStateId = function(name) {
+    StateManager.prototype._setCurrentState = function(name) {
         if (this._started === true)
             this._previousStateId = this._currentStateId.toString();
         this._currentStateId = name;
@@ -174,7 +174,7 @@
     StateManager.prototype.start = function(initialStateId) {
         var defaultState = this._initialStateId = initialStateId || this._initialStateId;
 
-        this._setCurrentStateId(defaultState);
+        this._setCurrentState(defaultState);
         this.changeState(defaultState);
         this._started = true;
     };
