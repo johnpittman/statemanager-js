@@ -41,32 +41,20 @@ bower: bower install statemanager
 
 <h4>How to use...</h4>
 
-    /*
-        stateExample :{
-            initialize: function() {
-            },
-            enter: function() {
-            },
-            leave: function() {
-            },
-            unload: function() {
-            },
-            transitions: {
-                beforeEnter: function() {
-                },
-                beforeEnterFromStill: function() {
-                },
-                enterFromStill: function() {
-                },
-                beforeLeave: function() {
-                },
-                leaveToWalking: function() {
-                },
-                beforeLeaveToWalking: function() {
-                }
-            }
+    var stateExample = {
+        initialize: function() {},
+        enter: function() {},
+        leave: function() {},
+        unload: function() {},
+        transitions: {
+            beforeEnter: function() {},
+            beforeEnterFromStill: function() {},
+            enterFromStill: function() {},
+            beforeLeave: function() {},
+            leaveToWalking: function() {},
+            beforeLeaveToWalking: function() {}
         }
-    */
+    };
 
     var movementStates = {
         'Still': {
