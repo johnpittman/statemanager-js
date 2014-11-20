@@ -120,8 +120,8 @@
             data: data
         };
 
-        var currState = this._states[this._currentStateId];
         if (this._started === true) {
+            var currState = this._states[this._currentStateId];
             this._leaveState(currState, changeStateData, toStateId);
             // Run an unload process for the state if there is one.
             if (currState.initialized === true)
