@@ -44,17 +44,15 @@
      * @param {string} [initialStateId]
      */
     StateManager.prototype.initialize = function(states, initialStateId) {
-        this.addStates(states, initialStateId);
+        this.addStates(states);
         this.start(initialStateId);
     };
 
     /**
      * Initializes the states collection with more states.
-     * Every state already has a 'Default' event
      * @param {object} states
-     * @param {string} [initialStateId]
      */
-    StateManager.prototype.addStates = function(states, initialStateId) {
+    StateManager.prototype.addStates = function(states) {
         for (var state in states) {
             this._states[state] = states[state];
         }

@@ -157,6 +157,12 @@ bower: bower install statemanager
 
 <h1>Release Notes</h1>
 
+<h3>v1.1.1</h3>
+
+<h4>Bug Fixes...</h4>
+
+- Removed initialStateId paramenter from addStates(). This is now done on the initializeStates() method or can me manually set by setInitialState().
+
 <h3>v1.1.0</h3>
 
 <h4>Breaking Changes...</h4>
@@ -171,5 +177,6 @@ bower: bower install statemanager
 - Added ability to have optional unload process for each state that will only get run if the initialize process has been run.
 
 <h4>Bug Fixes...</h4>
+
  - Make sure the transition object for a state exists.
  - leaveState now passes the data parameter into all leave processes.
