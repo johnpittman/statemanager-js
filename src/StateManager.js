@@ -1,5 +1,5 @@
 /**
- * @author John Pittman <johnrichardpittman@gmail.com> 
+ * @author John Pittman <johnrichardpittman@gmail.com>
  */
 
 (function(root, factory) {
@@ -27,9 +27,11 @@
         this._owner = owner || this;
 
         this._states = {};
-        this._currentState;
-        this._prevState;
-        this._initialState;
+        this._currentStateId;
+        this._previousStateId;
+        this._initialStateId;
+
+        this._started = false;
     }
 
     StateManager.prototype = Object.create(EventHandler.prototype);
@@ -39,85 +41,109 @@
      * Initializes the states collection with more states.
      * Every state already has a 'Default' event
      * @param {object} states
-     * @param {string} [initialState]
+     * @param {string} [initialStateId]
      */
-    StateManager.prototype.addStates = function(states, initialState) {
+    StateManager.prototype.initialize = function(states, initialStateId) {
+        this.addStates(states, initialStateId);
+        this.start(initialStateId);
+    };
+
+    /**
+     * Initializes the states collection with more states.
+     * Every state already has a 'Default' event
+     * @param {object} states
+     * @param {string} [initialStateId]
+     */
+    StateManager.prototype.addStates = function(states, initialStateId) {
         for (var state in states) {
             this._states[state] = states[state];
         }
-
-        this.start(initialState);
     };
 
     /**
      * Runs all enter processes for a state.
-     * @param  {string} name
+     * @param  {object} state
      * @param  {string} data - Additional info to pass through to processes and listeners.
      */
-    StateManager.prototype.enterState = function(fromState, data) {
-        var state = this._states[fromState];
-        if (state !== undefined) {
-            this.setCurrentState(fromState);
-
-            var enterFrom = state.transitions['onEnterFrom' + this._prevState];
+    StateManager.prototype._enterState = function(state, data) {
+        if (state.transitions !== undefined) {
+            var enterFrom = state.transitions['enterFrom' + this._previousStateId];
             if (enterFrom !== undefined) {
                 // beforeEnterFrom should only exist if there's an enterFrom process.
-                var beforeEnterFrom = state.transitions['onBeforeEnterFrom' + this._prevState];
+                var beforeEnterFrom = state.transitions['beforeEnterFrom' + this._previousStateId];
                 if (beforeEnterFrom !== undefined)
                     beforeEnterFrom.call(this._owner, data);
                 enterFrom.call(this._owner, data);
             }
 
-            var beforeEnter = state.transitions['onBeforeEnter'];
+            var beforeEnter = state.transitions['beforeEnter'];
             if (beforeEnter !== undefined)
                 beforeEnter.call(this._owner, data);
-            this.emit('enterstate', data);
-            state['enter'].call(this._owner, data);
         }
+        this.emit('enterstate', data);
+        state.enter.call(this._owner, data);
     };
 
     /**
      * Runs all leave processes for a state.
-     * @param  {string} name
+     * @param  {object} state
+     * @param  {*} data
+     * @param  {string} toStateId
      */
-    StateManager.prototype.leaveState = function(toState, data) {
-        var state = this._states[this._currentState];
+    StateManager.prototype._leaveState = function(state, data, toStateId) {
+        if (state.transitions !== undefined) {
+            var leaveTo = state.transitions['leaveTo' + toStateId];
+            if (leaveTo !== undefined) {
+                // beforeLeaveTo should only exist if there's an leaveTo process.
+                var beforeLeaveTo = state.transitions['beforeLeaveTo' + toStateId];
+                if (beforeLeaveTo !== undefined)
+                    beforeLeaveTo.call(this._owner, data);
+                leaveTo.call(this._owner, data);
+            }
 
-        var leaveTo = state.transitions['onLeaveTo' + toState];
-        if (leaveTo !== undefined) {
-            // beforeLeaveTo should only exist if there's an leaveTo process.
-            var beforeLeaveTo = state.transitions['onBeforeLeaveTo' + toState];
-            if (beforeLeaveTo !== undefined)
-                beforeLeaveTo.call(this._owner);
-            leaveTo.call(this._owner);
+            var beforeLeave = state.transitions['beforeLeave'];
+            if (beforeLeave !== undefined)
+                beforeLeave.call(this._owner, data);
         }
-
-        var beforeLeave = state.transitions['onBeforeLeave'];
-        if (beforeLeave !== undefined)
-            beforeLeave.call(this._owner);
-        state['leave'].call(this._owner);
         this.emit('leavestate', data);
+        state.leave.call(this._owner, data);
     };
 
     /**
      * Updates the current state to the state that's passed in.
      * Emits all events.
-     * @param  {string} state
+     * @param  {string} toStateId
      * @param  {*} [data] - Data to be access by all event listeners.
      */
-    StateManager.prototype.changeState = function(toState, data) {
-        var prevState = this._prevState;
-        var currState = this._currentState;
-
-        var info = {
-            from: currState,
-            to: toState,
+    StateManager.prototype.changeState = function(toStateId, data) {
+        var changeStateData = {
+            from: this._currentStateId.toString(),
+            to: toStateId,
             data: data
         };
 
-        if (currState !== this._prevState)
-            this.leaveState(toState, info);
-        this.enterState(toState, info);
+        var currState = this._states[this._currentStateId];
+        if (this._started === true) {
+            this._leaveState(currState, changeStateData, toStateId);
+            // Run an unload process for the state if there is one.
+            if (currState.initialized === true)
+                if (currState['unload'] !== undefined) {
+                    currState['unload'].call(this._owner, data);
+                    currState.initialized = false;
+                }
+        }
+
+        // Update current state.
+        this._setCurrentStateId(toStateId);
+
+        // Run an initialize process for the state if there is one.
+        var toState = this._states[toStateId];
+        if (!toState.initialized)
+            if (toState['initialize'] !== undefined) {
+                toState['initialize'].call(this._owner, data);
+                toState.initialized = true;
+            }
+        this._enterState(toState, changeStateData);
     };
 
     /**
@@ -125,23 +151,30 @@
      * Sets the current state to the state passed in without triggering events.
      * @param {string} name
      */
-    StateManager.prototype.setCurrentState = function(name) {
-        if (this._currentState !== undefined)
-            this._prevState = this._currentState.toString();
-        else
-            this._prevState = name;
-        this._currentState = name;
+    StateManager.prototype._setCurrentStateId = function(name) {
+        if (this._started === true)
+            this._previousStateId = this._currentStateId.toString();
+        this._currentStateId = name;
     };
 
     /**
-     * Sets the state machine back to the initial state.
-     * @param {string} initialStateName
+     * Sets the state machine back to the initial state and runs the initial state.
+     * @param {string} initialStateId
      */
-    StateManager.prototype.start = function(initialState) {
-        var defaultState = this._initialState = initialState || this._initialState;
+    StateManager.prototype.start = function(initialStateId) {
+        var defaultState = this._initialStateId = initialStateId || this._initialStateId;
 
-        this.setCurrentState(defaultState);
+        this._setCurrentStateId(defaultState);
         this.changeState(defaultState);
+        this._started = true;
+    };
+
+    /**
+     * Modifier
+     * @param {string} initialStateId
+     */
+    StateManager.prototype.setInitialState = function(initialStateId) {
+        this._initialStateId = initialStateId;
     };
 
     /**
@@ -149,7 +182,7 @@
      * @return {string}
      */
     StateManager.prototype.getCurrentState = function() {
-        return this._currentState;
+        return this._currentStateId;
     };
 
     /**
@@ -157,7 +190,7 @@
      * @return {string}
      */
     StateManager.prototype.getPreviousState = function() {
-        return this._prevState;
+        return this._previousStateId;
     };
 
     return StateManager;

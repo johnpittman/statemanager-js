@@ -41,52 +41,91 @@ bower: bower install statemanager
 
 <h4>How to use...</h4>
 
-    var movementStates = {
-        'Still': {
+    /*
+        stateExample :{
+            initialize: function() {
+            },
             enter: function() {
-                console.log('Standing still.');
             },
             leave: function() {
-                console.log('On to something else.');
+            },
+            unload: function() {
             },
             transitions: {
-                onBeforeEnter: function() {
-                    console.log('Time to be chill.');
+                beforeEnter: function() {
                 },
-                onBeforeLeave: function() {
-                    console.log('Being still sucks.');
+                beforeEnterFromStill: function() {
+                },
+                enterFromStill: function() {
+                },
+                beforeLeave: function() {
+                },
+                leaveToWalking: function() {
+                },
+                beforeLeaveToWalking: function() {
+                }
+            }
+        }
+    */
+
+    var movementStates = {
+        'Still': {
+            initialize: function() {
+                console.log('Calling the \'Still\' initialize the  process...');
+            },
+            enter: function() {
+                console.log('Standing Still.');
+            },
+            leave: function() {
+                console.log('Leaving \'Still\'.');
+            },
+            unload: function() {
+                console.log('Calling the \'Still\' unload the  process...');
+            },
+            transitions: {
+                beforeEnter: function() {
+                    console.log('Transitioning to \'Still\'.');
+                },
+                beforeLeave: function() {
+                    console.log('Transitioning from \'Still\'.');
                 }
             }
         },
         'Walking': {
+            initialize: function() {
+                console.log('Calling the \'Walking\' initialize the  process...');
+            },
             enter: function() {
                 console.log('Walking.');
             },
             leave: function() {
-                console.log('On to something else.');
+                console.log('Leaving \'Walking\'.');
             },
             transitions: {
-                onBeforeEnter: function() {
-                    console.log('Time to walk.');
+                beforeEnter: function() {
+                    console.log('Transitioning to \'Walking\'.');
                 },
-                onBeforeLeave: function() {
-                    console.log('Screw walking.');
+                beforeLeave: function() {
+                    console.log('Transitioning from \'Walking\'.');
                 }
             }
         },
         'Running': {
+            initialize: function() {
+                console.log('Calling the \'Running\' initialize the  process...');
+            },
             enter: function() {
                 console.log('Running.');
             },
             leave: function() {
-                console.log('On to something else.');
+                console.log('Leaving \'Running\'.');
             },
             transitions: {
-                onEnterFromWalking: function() {
-                    console.log('Time to run.');
+                enterFromWalking: function() {
+                    console.log('Enter \'Running\' from \'Walking\'.');
                 },
-                onLeaveToStill: function() {
-                    console.log('Running is tiresome.');
+                leaveToStill: function() {
+                    console.log('Leave \'Running\' to \'Still\'.');
                 }
             }
         }
@@ -99,25 +138,38 @@ bower: bower install statemanager
 
     var movementStateManager = new StateManager(this);
 
-    movementStateManager.on('enterstate', listener1);
-    movementStateManager.on('leavestate', listener1);
-
     console.log('Adding states.');
-    movementStateManager.addStates(movementStates, 'Still');
+    movementStateManager.initialize(movementStates, 'Still');
 
-    console.log('Previous state: ' + movementStateManager.getPreviousState());
     console.log('Initial state: ' + movementStateManager.getCurrentState());
 
     console.log('Changing state...');
     movementStateManager.changeState('Walking');
-    console.log('Current state: ' + movementStateManager.getCurrentState());
 
     console.log('Changing state...');
     movementStateManager.changeState('Running');
-    console.log('Current state: ' + movementStateManager.getCurrentState());
 
     console.log('Changing state...');
     movementStateManager.changeState('Still');
-    console.log('Current state: ' + movementStateManager.getCurrentState());
+
+    console.log('Changing state...');
+    movementStateManager.changeState('Walking');
 
 <h1>Release Notes</h1>
+
+<h3>v1.1.0</h3>
+
+<h4>Breaking Changes...</h4>
+
+- addStates no longer runs the initial state. The initialize method should be used which will call addStates and then start();
+- Names of the transistion events for each state have changed format. Before ex. onBeforeEnter, Now ex. beforEnter.
+
+<h4>Additional Changes...</h4>
+
+- Added setInitialState();
+- Added ability to have optional initialize process for each state that will only get run once unless it's unloaded.
+- Added ability to have optional unload process for each state that will only get run if the initialize process has been run.
+
+<h4>Bug Fixes...</h4>
+ - Make sure the transition object for a state exists.
+ - leaveState now passes the data parameter into all leave processes.
