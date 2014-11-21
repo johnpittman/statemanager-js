@@ -131,14 +131,12 @@ These are breaking only if you were using them.
 - Removed before leave processes because these make no sense to have since enter is the main(update) process and before enter is the previous which means leave is the next so we don't need a before next since there's no before previous.
 - Removed the enterFrom process because one process to distinguish what state we're transitioning from is enough.
 
-- Added:
+- Added: 
     /**
-     * Runs the current state enter process only.
-     * @param  {*} data
+     * Accessor.
+     * @return {object} - The actual state object to re-run the enter process if needed.
      */
-    StateManager.prototype.update;
-
-    Emits the updatestate event.
+    StateManager.prototype.getCurrentState;
 
 <h3>v1.2.5</h3>
 

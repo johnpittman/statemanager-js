@@ -125,24 +125,6 @@
     };
 
     /**
-     * Runs the current state enter process only.
-     * @param  {*} data
-     */
-    StateManager.prototype.update = function(data) {
-        var state = this._currentState;
-        // Call the static process that will always run on enter.
-        state.enter.call(this._owner, data);
-        if (state.transitions !== undefined) {
-            // If there's special needs when coming from another state, run the process that should do specific work needed to be done for the given case.
-            var enterFrom = state.transitions['enterFrom' + this._previousStateId];
-            if (enterFrom !== undefined) {
-                enterFrom.call(this._owner, data);
-            }
-        }
-        this.emit('updatestate', data);
-    };
-
-    /**
      * Modifier.
      * Sets the current state to the state passed in without triggering events.
      * @param {string} name
@@ -180,6 +162,14 @@
      */
     StateManager.prototype.getCurrentStateId = function() {
         return this._currentStateId;
+    };
+
+    /**
+     * Accessor.
+     * @return {object} - The actual state object to re-run the enter process if needed.
+     */
+    StateManager.prototype.getCurrentState = function() {
+        return this._currentState;
     };
 
     /**
