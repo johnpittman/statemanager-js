@@ -42,47 +42,30 @@ bower: bower install statemanager
 <h4>How to use...</h4>
 
     var stateExample = {
-        initialize: function() {},                  // Optional
         enter: function() {},
         leave: function() {},
-        unload: function() {},                      // Optional
         transitions: {
             beforeEnter: function() {},             // Optional
             beforeEnterFromStill: function() {},    // Optional
-            enterFromStill: function() {},          // Optional
-            beforeLeave: function() {},             // Optional
             leaveToWalking: function() {},          // Optional
-            beforeLeaveToWalking: function() {}     // Optional
         }
     };
 
     var movementStates = {
         'Still': {
-            initialize: function() {
-                console.log('Calling the \'Still\' initialize the  process...');
-            },
             enter: function() {
                 console.log('Standing Still.');
             },
             leave: function() {
                 console.log('Leaving \'Still\'.');
             },
-            unload: function() {
-                console.log('Calling the \'Still\' unload the  process...');
-            },
             transitions: {
                 beforeEnter: function() {
                     console.log('Transitioning to \'Still\'.');
-                },
-                beforeLeave: function() {
-                    console.log('Transitioning from \'Still\'.');
                 }
             }
         },
         'Walking': {
-            initialize: function() {
-                console.log('Calling the \'Walking\' initialize the  process...');
-            },
             enter: function() {
                 console.log('Walking.');
             },
@@ -92,16 +75,10 @@ bower: bower install statemanager
             transitions: {
                 beforeEnter: function() {
                     console.log('Transitioning to \'Walking\'.');
-                },
-                beforeLeave: function() {
-                    console.log('Transitioning from \'Walking\'.');
                 }
             }
         },
         'Running': {
-            initialize: function() {
-                console.log('Calling the \'Running\' initialize the  process...');
-            },
             enter: function() {
                 console.log('Running.');
             },
@@ -109,7 +86,7 @@ bower: bower install statemanager
                 console.log('Leaving \'Running\'.');
             },
             transitions: {
-                enterFromWalking: function() {
+                beforeEnterFromWalking: function() {
                     console.log('Enter \'Running\' from \'Walking\'.');
                 },
                 leaveToStill: function() {
@@ -129,7 +106,7 @@ bower: bower install statemanager
     console.log('Adding states.');
     movementStateManager.initialize(movementStates, 'Still');
 
-    console.log('Initial state: ' + movementStateManager.getCurrentState());
+    console.log('Initial state: ' + movementStateManager.getCurrentStateId());
 
     console.log('Changing state...');
     movementStateManager.changeState('Walking');
@@ -144,6 +121,24 @@ bower: bower install statemanager
     movementStateManager.changeState('Walking');
 
 <h1>Release Notes</h1>
+
+<h3>v1.3.0</h3>
+
+<h4>Breaking Changes...</h4>
+
+These are breaking only if you were using them.
+- Removed the initialize and unload processes. An object should be keeping track of it's own initial state. The object would run it's initialize method in the beforeEnter or enter processes and it's unload method in the leave process.
+- Removed before leave processes because these make no sense to have since enter is the main(update) process and before enter is the previous which means leave is the next so we don't need a before next since there's no before previous.
+- Removed the enterFrom process because one process to distinguish what state we're transitioning from is enough.
+
+- Added:
+    /**
+     * Runs the current state enter process only.
+     * @param  {*} data
+     */
+    StateManager.prototype.update;
+
+    Emits the updatestate event.
 
 <h3>v1.2.5</h3>
 

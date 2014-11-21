@@ -27,6 +27,7 @@
         this._owner = owner || this;
 
         this._states = {};
+        this._currentState;
         this._currentStateId;
         this._previousStateId;
         this._initialStateId;
@@ -64,9 +65,7 @@
      * @param  {*} [data] - Additional info to pass through to processes and listeners.
      */
     StateManager.prototype._enterState = function(state, data) {
-        var hasTransitions = state.transitions !== undefined;
-
-        if (hasTransitions === true) {
+        if (state.transitions !== undefined) {
             // Call the before process that will do the setup for the enter process.
             var beforeEnter = state.transitions['beforeEnter'];
             if (beforeEnter !== undefined)
@@ -80,13 +79,6 @@
 
         // Call the static process that will always run on enter.
         state.enter.call(this._owner, data);
-        if (hasTransitions === true) {
-            // If there's special needs when coming from another state, run the process that should do specific work needed to be done for the given case.
-            var enterFrom = state.transitions['enterFrom' + this._previousStateId];
-            if (enterFrom !== undefined) {
-                enterFrom.call(this._owner, data);
-            }
-        }
         this.emit('enterstate', data);
     };
 
@@ -97,20 +89,9 @@
      * @param  {string} toStateId
      */
     StateManager.prototype._leaveState = function(state, data, toStateId) {
-        var hasTransitions = state.transitions !== undefined;
-        if (hasTransitions === true) {
-            var beforeLeave = state.transitions['beforeLeave'];
-            if (beforeLeave !== undefined)
-                beforeLeave.call(this._owner, data);
-            var beforeLeaveTo = state.transitions['beforeLeaveTo' + toStateId];
-            if (beforeLeaveTo !== undefined)
-                beforeLeaveTo.call(this._owner, data);
-        }
-        this.emit('beforeleavestate', data);
-
         // Call the static process that will always run on leave.
         state.leave.call(this._owner, data);
-        if (hasTransitions === true) {
+        if (state.transitions !== undefined) {
             // If there's special needs when going to another state, run the process that should do specific work needed to be done for the given case.
             var leaveTo = state.transitions['leaveTo' + toStateId];
             if (leaveTo !== undefined)
@@ -132,28 +113,33 @@
             data: data
         };
 
-        if (this._started === true) {
-            var currState = this._states[this._currentStateId];
-            this._leaveState(currState, changeStateData, toStateId);
-            // Run an unload process for the state if there is one.
-            if (currState.initialized === true)
-                if (currState['unload'] !== undefined) {
-                    currState['unload'].call(this._owner, data);
-                    currState.initialized = false;
-                }
-        }
-
         // Update current state.
         this._setCurrentState(toStateId);
 
-        // Run an initialize process for the state if there is one.
-        var toState = this._states[toStateId];
-        if (!toState.initialized)
-            if (toState['initialize'] !== undefined) {
-                toState['initialize'].call(this._owner, data);
-                toState.initialized = true;
+        // Leave state.
+        if (this._started === true)
+            this._leaveState(this._states[this._previousStateId], changeStateData, toStateId);
+
+        // Enter state.
+        this._enterState(this._currentState, changeStateData);
+    };
+
+    /**
+     * Runs the current state enter process only.
+     * @param  {*} data
+     */
+    StateManager.prototype.update = function(data) {
+        var state = this._currentState;
+        // Call the static process that will always run on enter.
+        state.enter.call(this._owner, data);
+        if (state.transitions !== undefined) {
+            // If there's special needs when coming from another state, run the process that should do specific work needed to be done for the given case.
+            var enterFrom = state.transitions['enterFrom' + this._previousStateId];
+            if (enterFrom !== undefined) {
+                enterFrom.call(this._owner, data);
             }
-        this._enterState(toState, changeStateData);
+        }
+        this.emit('updatestate', data);
     };
 
     /**
@@ -165,6 +151,7 @@
         if (this._started === true)
             this._previousStateId = this._currentStateId.toString();
         this._currentStateId = name;
+        this._currentState = this._states[this._currentStateId];
     };
 
     /**
@@ -191,7 +178,7 @@
      * Accessor.
      * @return {string}
      */
-    StateManager.prototype.getCurrentState = function() {
+    StateManager.prototype.getCurrentStateId = function() {
         return this._currentStateId;
     };
 
